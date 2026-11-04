@@ -1,0 +1,387 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ---------------------------------------------------------
+// AUTHENTICATION & ACCESS CONTROL
+// ---------------------------------------------------------
+
+enum UserRole {
+  ADMIN
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  name         String
+  role         UserRole  @default(ADMIN)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([email])
+}
+
+// ---------------------------------------------------------
+// PROFILE & GENERAL SETTINGS
+// ---------------------------------------------------------
+
+model Profile {
+  id                   String   @id @default(cuid())
+  name                 String   @default("Rohan")
+  title                String   @default("Full Stack Developer & AI Engineer")
+  bio                  String   @db.Text
+  avatarUrl            String?  // Cloudinary image or direct URL (About section photo)
+  heroImageUrl         String?  // Separate hero section image (transparent cutout)
+  aboutImageUrl        String?  // About section photo (falls back to avatarUrl)
+  resumeUrl            String?  // Cloudinary PDF or direct document URL
+  yearsOfExp           Int?
+  location             String?  @default("[Your Location]")
+  availableShow        Boolean  @default(true)
+  availableFor         String?  @default("Available for opportunities")
+  availableStatusColor String   @default("green") // "green" | "amber" | "red"
+  coreFocusLabel       String?  @default("Core Focus")
+  coreFocusValue       String?  @default("Next.js & AI Systems")
+  aboutHeading         String?  @default("Turning Ideas Into Digital Reality")
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model SiteSettings {
+  id              String   @id @default(cuid())
+  brandName       String   @default("Rohan.Dev")
+  brandMonogram   String   @default("R")
+  contactEmail    String   @default("contact@rohan.dev")
+  contactPhone    String?  // Phone number for contact display
+  footerText      String   @default("Built with Next.js, TypeScript & Neon PostgreSQL.")
+  copyrightNotice String   @default("© [Year] Rohan.Dev. All rights reserved.")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model HomepageContent {
+  id               String   @id @default(cuid())
+  heroGreeting     String   @default("Hello, I'm")
+  heroName         String   @default("Rohan Mirza")
+  heroNamePrefix   String?  @default("Rohan")
+  heroNameHighlight String  @default("Mirza")
+  heroHeading      String   @default("Hi, I'm Rohan")
+  heroSubheading   String   @default("Full Stack Developer & AI Engineer")
+  heroTagline      String   @default("Turning complex AI capabilities into elegant, performant digital realities.")
+  heroParagraph    String?
+  primaryCtaText   String   @default("View My Work")
+  primaryCtaLink   String   @default("#projects")
+  secondaryCtaText String   @default("Contact Me")
+  secondaryCtaLink String   @default("#contact")
+
+  // Hero Quick Tech Badges
+  heroTechBadges        String[] @default(["Next.js", "React", "TypeScript", "Tailwind CSS", "Python", "FastAPI", "OpenAI", "MCP", "PostgreSQL", "MongoDB", "MySQL", "Sanity"])
+  heroUseFeaturedSkills Boolean  @default(false)
+
+  // Hero Typewriter Effect
+  heroEnableTypewriter  Boolean  @default(true)
+  heroTypewriterPhrases String[] @default(["Full Stack Developer & AI Engineer", "Next.js & React Specialist", "AI & LLM Systems Architect"])
+  heroTypewriterSpeed   String   @default("normal") // "slow" | "normal" | "fast"
+  heroTypewriterLoop    Boolean  @default(true)
+  heroTypewriterName    Boolean  @default(true)
+
+  // Hero Right Tagline Block
+  heroShowTaglineWords  Boolean  @default(true)
+  heroTaglineWords      String[] @default(["Code", "Build", "Innovate"])
+  heroImageUrl          String?
+
+  // Navbar CTA
+  navbarCtaText    String   @default("Let's Connect")
+  navbarCtaLink    String   @default("#contact")
+
+  // Section Headings & Eyebrows
+  aboutEyebrow                  String  @default("ABOUT ME")
+  aboutTitle                    String  @default("Who *I Am*")
+  skillsEyebrow                 String  @default("TECH STACK")
+  skillsTitle                   String  @default("Technologies *I Work With*")
+  projectsEyebrow               String  @default("MY PROJECTS")
+  projectsTitle                 String  @default("Featured *Projects*")
+  projectsViewAllText           String  @default("View All Projects")
+  servicesEyebrow               String  @default("SERVICES")
+  servicesTitle                 String  @default("What *I Do*")
+  servicesIntro                 String? @default("I offer modern web development and AI solutions tailored to your needs. From concept to deployment, I help turn your ideas into powerful digital products.")
+  educationEyebrow              String  @default("EDUCATION")
+  educationTitle                String  @default("My *Education*")
+  timelineEyebrow               String  @default("EDUCATION")
+  timelineTitle                 String  @default("My *Education*")
+  educationIntro                String? @default("My academic journey and the skills I've built along the way.")
+  educationQuickContactTitle    String  @default("Feel free to contact me")
+  educationQuickContactText     String  @default("I'm always open to discussing new projects, ideas or opportunities.")
+  timelineEducationHeading      String  @default("Education")
+  timelineCertificationsHeading String  @default("Certifications")
+  contactEyebrow                String  @default("CONTACT")
+  contactTitle                  String  @default("Get in *Touch*")
+  contactPitchHeadline          String  @default("Let's build intelligent web applications together.")
+  contactPitchText              String  @default("Whether you are looking to architect a Next.js platform, integrate LLM/agent pipelines, or build robust backend systems, feel free to reach out.")
+
+  // "Let's Work Together" card
+  letWorkTogetherTitle   String  @default("Let's Work Together")
+  letWorkTogetherText    String  @default("Have a project in mind or just want to say hello? I'd love to hear from you.")
+  letWorkTogetherCtaText String  @default("Get In Touch")
+
+  // Contact Popup
+  contactPopupTitle          String  @default("Get In Touch")
+  contactPopupSubtitle       String  @default("Send me a message and I'll get back to you as soon as possible.")
+  contactPopupSuccessMessage String  @default("Thanks! Your message was sent successfully.")
+
+  // Section Visibility Toggles
+  heroVisible         Boolean  @default(true)
+  heroShow3D          Boolean  @default(false)
+  aboutVisible        Boolean  @default(true)
+  skillsVisible       Boolean  @default(true)
+  projectsVisible     Boolean  @default(true)
+  servicesVisible     Boolean  @default(true)
+  timelineVisible     Boolean  @default(true)
+  contactVisible      Boolean  @default(true)
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+// ---------------------------------------------------------
+// THEME & SEO SETTINGS
+// ---------------------------------------------------------
+
+enum ThemeMode {
+  LIGHT
+  DARK
+  SYSTEM
+}
+
+enum AccentColor {
+  BLUE      // #3b82f6 to #8b5cf6 (default)
+  EMERALD   // #10b981
+  CYAN      // #06b6d4
+  INDIGO    // #6366f1
+  VIOLET    // #8b5cf6
+  AMBER     // #f59e0b
+  ROSE      // #f43f5e
+}
+
+model ThemeSettings {
+  id              String      @id @default(cuid())
+  defaultMode     ThemeMode   @default(DARK)
+  accentColor     AccentColor @default(BLUE)
+  enableGradients Boolean     @default(true)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model SeoSettings {
+  id              String   @id @default(cuid())
+  siteTitle       String   @default("Rohan.Dev | Full Stack Developer & AI Engineer")
+  metaDescription String   @default("Portfolio of Rohan - Full Stack Developer & AI Engineer specializing in Next.js, Python, LLMs, and high-performance web systems.")
+  keywords        String   @default("Full Stack Developer, AI Engineer, Next.js, TypeScript, Python, FastAPI, OpenAI, LangChain, MCP, Neon")
+  ogImageUrl      String?  // Cloudinary or direct image URL
+  faviconUrl      String?  // Cloudinary or direct icon URL
+  twitterHandle   String?  @default("@rohandev")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// ---------------------------------------------------------
+// PROJECTS
+// ---------------------------------------------------------
+
+model Project {
+  id             String         @id @default(cuid())
+  title          String
+  slug           String         @unique
+  category       String?        @default("AI Systems")
+  categoryLabel  String?        // Short label for card subtitle, e.g. "AI Learning Platform"
+  iconImageUrl   String?        // Small rounded icon/logo for the project card
+  summary        String         @db.VarChar(300)
+  description    String         @db.Text
+  featured       Boolean        @default(false)
+  featuredOrder  Int            @default(0)
+  published      Boolean        @default(true)
+  order          Int            @default(0)
+  techStack      String[]       // e.g. ["Next.js", "FastAPI", "OpenAI", "PostgreSQL"]
+  githubUrl      String?
+  liveUrl        String?
+  images         ProjectImage[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@index([published, order])
+  @@index([featured, featuredOrder])
+  @@index([slug])
+  @@index([category])
+}
+
+model ProjectImage {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  url       String   // Cloudinary or direct URL
+  altText   String   @default("Project preview")
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([projectId, order])
+}
+
+// ---------------------------------------------------------
+// SKILLS & CATEGORIES
+// ---------------------------------------------------------
+
+model SkillCategory {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  order     Int      @default(0)
+  visible   Boolean  @default(true)
+  skills    Skill[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([order])
+  @@index([visible])
+}
+
+model Skill {
+  id               String        @id @default(cuid())
+  name             String
+  categoryId       String
+  category         SkillCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  iconName         String?       // Lucide icon key or image URL
+  proficiency      Int?          // 1-100
+  proficiencyLevel String?       // e.g. "Beginner", "Intermediate", "Advanced", "Expert"
+  yearsOfExp       Int?          // Years of experience
+  description      String?       // Short description
+  featured         Boolean       @default(false)
+  order            Int           @default(0)
+  visible          Boolean       @default(true)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  @@index([categoryId, order])
+  @@index([visible])
+  @@index([featured])
+}
+
+// ---------------------------------------------------------
+// SERVICES
+// ---------------------------------------------------------
+
+model Service {
+  id             String   @id @default(cuid())
+  title          String
+  description    String   @db.Text
+  iconName       String   @default("Code")
+  deliverableTag String?  @default("Custom Architecture & Execution")
+  order          Int      @default(0)
+  visible        Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([order])
+  @@index([visible])
+}
+
+// ---------------------------------------------------------
+// EDUCATION & CERTIFICATIONS
+// ---------------------------------------------------------
+
+model Education {
+  id           String    @id @default(cuid())
+  institution  String
+  degree       String
+  fieldOfStudy String?
+  startDate    DateTime
+  endDate      DateTime?
+  description  String?   @db.Text
+  visible      Boolean   @default(true)
+  order        Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([visible, order])
+}
+
+model Certification {
+  id             String    @id @default(cuid())
+  title          String
+  issuer         String
+  issueDate      DateTime?
+  expiryDate     DateTime?
+  credentialId   String?
+  credentialUrl  String?
+  certificateUrl String?
+  visible        Boolean   @default(true)
+  order          Int       @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([visible, order])
+}
+
+// ---------------------------------------------------------
+// SOCIAL LINKS
+// ---------------------------------------------------------
+
+model SocialLink {
+  id        String   @id @default(cuid())
+  platform  String
+  url       String
+  iconName  String   @default("ExternalLink")
+  order     Int      @default(0)
+  visible   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([order])
+  @@index([visible])
+}
+
+// ---------------------------------------------------------
+// CONTACT MESSAGES (LEADS)
+// ---------------------------------------------------------
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String?
+  message   String   @db.Text
+  isRead    Boolean  @default(false)
+  ipHash    String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([isRead, createdAt])
+  @@index([createdAt])
+}
+
+// ---------------------------------------------------------
+// KEY STATS (ABOUT SECTION)
+// ---------------------------------------------------------
+
+model KeyStat {
+  id        String   @id @default(cuid())
+  label     String
+  value     String
+  order     Int      @default(0)
+  visible   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([order])
+  @@index([visible])
+  @@map("key_stats")
+}
+
+

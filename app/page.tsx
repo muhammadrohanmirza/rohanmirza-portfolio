@@ -1,69 +1,133 @@
-import Image from "next/image";
+import React from "react";
+import {
+  getPublicProfile,
+  getPublicHomepageContent,
+  getPublicSkills,
+  getPublicProjects,
+  getPublicServices,
+  getPublicEducation,
+  getPublicCertifications,
+  getPublicSocialLinks,
+  getPublicSiteSettings,
+  getPublicThemeSettings,
+} from "@/lib/queries/public.queries";
+import { ContactModalProvider } from "@/components/public/ContactModalContext";
+import { Navbar } from "@/components/public/Navbar";
+import { HeroSection } from "@/components/public/HeroSection";
+import { AboutSection } from "@/components/public/AboutSection";
+import { ProjectsSection } from "@/components/public/ProjectsSection";
+import { ServicesEducationSection } from "@/components/public/ServicesEducationSection";
+import { Footer } from "@/components/public/Footer";
+import { ContactPopup } from "@/components/public/ContactPopup";
 
-export default function Home() {
+export const instant = false;
+
+export default async function HomePage() {
+  let profile: Awaited<ReturnType<typeof getPublicProfile>> = null;
+  let homepageContent: Awaited<ReturnType<typeof getPublicHomepageContent>> = null;
+  let skills: Awaited<ReturnType<typeof getPublicSkills>> = [];
+  let projects: Awaited<ReturnType<typeof getPublicProjects>> = [];
+  let services: Awaited<ReturnType<typeof getPublicServices>> = [];
+  let education: Awaited<ReturnType<typeof getPublicEducation>> = [];
+  let certifications: Awaited<ReturnType<typeof getPublicCertifications>> = [];
+  let socialLinks: Awaited<ReturnType<typeof getPublicSocialLinks>> = [];
+  let siteSettings: Awaited<ReturnType<typeof getPublicSiteSettings>> = null;
+  let themeSettings: Awaited<ReturnType<typeof getPublicThemeSettings>> = null;
+
+  try {
+    const results = await Promise.allSettled([
+      getPublicProfile(),
+      getPublicHomepageContent(),
+      getPublicSkills(),
+      getPublicProjects(),
+      getPublicServices(),
+      getPublicEducation(),
+      getPublicCertifications(),
+      getPublicSocialLinks(),
+      getPublicSiteSettings(),
+      getPublicThemeSettings(),
+    ]);
+
+    profile = results[0].status === "fulfilled" ? results[0].value : null;
+    homepageContent = results[1].status === "fulfilled" ? results[1].value : null;
+    skills = results[2].status === "fulfilled" ? results[2].value : [];
+    projects = results[3].status === "fulfilled" ? results[3].value : [];
+    services = results[4].status === "fulfilled" ? results[4].value : [];
+    education = results[5].status === "fulfilled" ? results[5].value : [];
+    certifications = results[6].status === "fulfilled" ? results[6].value : [];
+    socialLinks = results[7].status === "fulfilled" ? results[7].value : [];
+    siteSettings = results[8].status === "fulfilled" ? results[8].value : null;
+    themeSettings = results[9].status === "fulfilled" ? results[9].value : null;
+  } catch (err) {
+    console.warn("Database read notice:", err);
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <ContactModalProvider>
+      <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] selection:bg-[var(--accent)] selection:text-white transition-colors duration-200">
+        {/* Sticky Frosted Navbar */}
+        <Navbar
+          homepageContent={homepageContent}
+          siteSettings={siteSettings}
+          hasProjects={projects.length > 0}
+          hasServices={services.length > 0}
+          hasTimeline={education.length > 0 || certifications.length > 0}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
+
+        <main>
+          {/* Hero Section */}
+          {(homepageContent?.heroVisible ?? true) && (
+            <HeroSection
+              content={homepageContent}
+              profile={profile}
+              socialLinks={socialLinks}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+          )}
+
+          {/* About & Tech Stack Section */}
+          {(homepageContent?.aboutVisible ?? true) && (
+            <AboutSection
+              profile={profile}
+              homepageContent={homepageContent}
+              skillsCategories={skills}
+            />
+          )}
+
+          {/* Featured Projects Section */}
+          {(homepageContent?.projectsVisible ?? true) && (
+            <ProjectsSection
+              projects={projects}
+              eyebrow={homepageContent?.projectsEyebrow}
+              title={homepageContent?.projectsTitle}
+              viewAllText={homepageContent?.projectsViewAllText}
+            />
+          )}
+
+          {/* Services, Education Timeline & "Let's Work Together" Row */}
+          <ServicesEducationSection
+            services={services}
+            education={education}
+            certifications={certifications}
+            homepageContent={homepageContent}
+            siteSettings={siteSettings}
+            profile={profile}
+          />
+        </main>
+
+        {/* Footer */}
+        <Footer
+          siteSettings={siteSettings}
+          socialLinks={socialLinks}
+          profileTitle={profile?.title}
+        />
+
+        {/* Global Contact Popup Modal */}
+        <ContactPopup
+          title={homepageContent?.contactPopupTitle}
+          subtitle={homepageContent?.contactPopupSubtitle}
+          successMessage={homepageContent?.contactPopupSuccessMessage}
+        />
+      </div>
+    </ContactModalProvider>
   );
 }
