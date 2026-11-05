@@ -36,7 +36,6 @@ interface AboutSectionProps {
     title: string;
     bio: string;
     avatarUrl?: string | null;
-    heroImageUrl?: string | null;
     aboutImageUrl?: string | null;
     aboutHeading?: string | null;
     resumeUrl?: string | null;
@@ -61,8 +60,7 @@ export function AboutSection({
 }: AboutSectionProps) {
   const sliderRef = useRef<HTMLDivElement>(null);
 
-  const aboutPhoto =
-    profile?.aboutImageUrl || profile?.avatarUrl || profile?.heroImageUrl || null;
+  const aboutPhoto = profile?.aboutImageUrl ?? null;
   const name = profile?.name || "Rohan Mirza";
   const aboutHeading =
     profile?.aboutHeading || homepageContent?.aboutTitle || "Turning Ideas Into Digital Reality";

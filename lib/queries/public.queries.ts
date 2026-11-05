@@ -13,7 +13,6 @@ export async function getPublicProfile() {
       title: true,
       bio: true,
       avatarUrl: true,
-      heroImageUrl: true,
       aboutImageUrl: true,
       aboutHeading: true,
       resumeUrl: true,

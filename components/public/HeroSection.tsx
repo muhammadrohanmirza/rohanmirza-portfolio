@@ -107,9 +107,7 @@ export function HeroSection({
   const rawTaglineWords = content?.heroTaglineWords ?? ["Code", "Build", "Innovate"];
   const taglineWords = showTaglineWords ? rawTaglineWords.filter(Boolean) : [];
 
-  // Hero Image: content.heroImageUrl -> profile.heroImageUrl -> profile.avatarUrl
-  const heroImage =
-    content?.heroImageUrl || profile?.heroImageUrl || profile?.avatarUrl || null;
+  const heroImage = content?.heroImageUrl?.trim() || null;
   const hasHeroVisual = Boolean(show3D || heroImage);
 
   // Default social links if none in database

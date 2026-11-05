@@ -24,7 +24,6 @@ export async function updateProfile(data: ProfileInput) {
   const payload = {
     ...validated,
     avatarUrl: validated.avatarUrl?.trim() || null,
-    heroImageUrl: validated.heroImageUrl?.trim() || null,
     aboutImageUrl: validated.aboutImageUrl?.trim() || null,
     resumeUrl: validated.resumeUrl?.trim() || null,
   };
@@ -103,19 +102,6 @@ export async function updateHomepageContent(data: HomepageContentInput) {
     await prisma.homepageContent.create({
       data: validated,
     });
-  }
-
-  // If hero image was set or updated, keep profile.heroImageUrl in sync
-  if (validated.heroImageUrl !== undefined) {
-    const profile = await prisma.profile.findFirst();
-    if (profile) {
-      await prisma.profile.update({
-        where: { id: profile.id },
-        data: { heroImageUrl: validated.heroImageUrl || null },
-      });
-      revalidateTag("portfolio:profile", "max");
-      revalidatePath("/admin/profile");
-    }
   }
 
   revalidateTag("portfolio:homepage", "max");

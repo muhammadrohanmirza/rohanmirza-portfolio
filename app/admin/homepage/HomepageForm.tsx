@@ -73,10 +73,8 @@ interface HomepageContentData {
 
 export function HomepageForm({
   initialContent,
-  initialProfileHeroImage,
 }: {
   initialContent?: HomepageContentData | null;
-  initialProfileHeroImage?: string | null;
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -108,7 +106,7 @@ export function HomepageForm({
 
   // Hero Image
   const [heroImageUrl, setHeroImageUrl] = useState<string>(
-    initialContent?.heroImageUrl || initialProfileHeroImage || ""
+    initialContent?.heroImageUrl ?? ""
   );
 
   // Hero Tech Badges
@@ -566,10 +564,11 @@ export function HomepageForm({
         </p>
 
         <ImageUploader
+          key="homepage-hero-image-uploader"
           value={heroImageUrl}
           onImageChange={(url) => setHeroImageUrl(url)}
           folder="portfolio/hero"
-          label="Hero Portrait Photo (Cutout)"
+          label="Hero image"
         />
       </div>
 

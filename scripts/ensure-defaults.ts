@@ -20,17 +20,14 @@ async function main() {
   }
 
   const profile = await prisma.profile.findFirst();
-  const defaultImg = profile?.avatarUrl || '/uploads/images/b531235f-d010-4aaf-83c7-bb63745190d6-1791827792983.png';
   if (profile) {
     await prisma.profile.update({
       where: { id: profile.id },
       data: {
-        heroImageUrl: profile.heroImageUrl || defaultImg,
-        aboutImageUrl: profile.aboutImageUrl || defaultImg,
         aboutHeading: profile.aboutHeading || 'Transforming complex ideas into polished, high-performance web applications.'
       }
     });
-    console.log('Profile images set:', { hero: profile.heroImageUrl || defaultImg, about: profile.aboutImageUrl || defaultImg });
+    console.log('Profile defaults ensured without cross-filling hero/about/avatar images.');
   }
 
   const settings = await prisma.siteSettings.findFirst();

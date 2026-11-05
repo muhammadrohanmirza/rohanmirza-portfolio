@@ -41,7 +41,6 @@ model Profile {
   title                String   @default("Full Stack Developer & AI Engineer")
   bio                  String   @db.Text
   avatarUrl            String?  // Cloudinary image or direct URL (About section photo)
-  heroImageUrl         String?  // Separate hero section image (transparent cutout)
   aboutImageUrl        String?  // About section photo (falls back to avatarUrl)
   resumeUrl            String?  // Cloudinary PDF or direct document URL
   yearsOfExp           Int?

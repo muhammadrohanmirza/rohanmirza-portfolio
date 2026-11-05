@@ -13,7 +13,6 @@ interface ProfileData {
   title?: string;
   bio?: string;
   avatarUrl?: string | null;
-  heroImageUrl?: string | null;
   aboutImageUrl?: string | null;
   aboutHeading?: string | null;
   resumeUrl?: string | null;
@@ -45,7 +44,6 @@ export function ProfileForm({
       "I'm a passionate Full Stack Developer & AI Engineer with a strong focus on building modern, scalable and user-friendly web applications. I love working with new technologies, solving real problems and creating products that make a difference."
   );
   const [avatarUrl, setAvatarUrl] = useState(initialProfile?.avatarUrl || "");
-  const [heroImageUrl, setHeroImageUrl] = useState(initialProfile?.heroImageUrl || "");
   const [aboutImageUrl, setAboutImageUrl] = useState(initialProfile?.aboutImageUrl || "");
   const [resumeUrl, setResumeUrl] = useState(initialProfile?.resumeUrl || "");
   const [location, setLocation] = useState(initialProfile?.location || "Karachi, Pakistan");
@@ -75,7 +73,6 @@ export function ProfileForm({
         aboutHeading: aboutHeading.trim() || null,
         bio: bio.trim(),
         avatarUrl: avatarUrl.trim() || null,
-        heroImageUrl: heroImageUrl.trim() || null,
         aboutImageUrl: aboutImageUrl.trim() || null,
         resumeUrl: resumeUrl.trim() || null,
         location: location.trim() || null,
@@ -293,54 +290,39 @@ export function ProfileForm({
         </div>
       </div>
 
-      {/* Hero Photo Card (Transparent Cutout) */}
-      <div className="p-4 sm:p-6 md:p-8 rounded-2xl bg-[#12131a] border border-white/10 shadow-xl space-y-4">
-        <h2 className="text-lg font-bold text-white tracking-tight pb-4 border-b border-white/10">
-          Hero Section Image (Cutout)
-        </h2>
-        <p className="text-xs text-slate-400 font-mono">
-          Appears in the Hero section on the soft rounded gradient shape. A transparent cutout photo works best. If empty, falls back to the profile avatar or monogram.
-        </p>
-
-        <ImageUploader
-          value={heroImageUrl}
-          onImageChange={(url) => setHeroImageUrl(url)}
-          folder="portfolio/hero"
-          label="Hero Image (Transparent Cutout)"
-        />
-      </div>
-
       {/* About Section Photo Card */}
       <div className="p-4 sm:p-6 md:p-8 rounded-2xl bg-[#12131a] border border-white/10 shadow-xl space-y-4">
         <h2 className="text-lg font-bold text-white tracking-tight pb-4 border-b border-white/10">
-          About Section Photo (Square Card)
+          About image
         </h2>
         <p className="text-xs text-slate-400 font-mono">
-          Appears in the About Me section with the pastel gradient frame. If empty, falls back to the general avatar.
+          Shown only in the About section. It does not borrow from the Hero image or avatar.
         </p>
 
         <ImageUploader
+          key="profile-about-image-uploader"
           value={aboutImageUrl}
           onImageChange={(url) => setAboutImageUrl(url)}
           folder="portfolio/about"
-          label="About Section Photo"
+          label="About image"
         />
       </div>
 
       {/* Profile Photo / Avatar Card */}
       <div className="p-4 sm:p-6 md:p-8 rounded-2xl bg-[#12131a] border border-white/10 shadow-xl space-y-4">
         <h2 className="text-lg font-bold text-white tracking-tight pb-4 border-b border-white/10">
-          General Avatar / Fallback Headshot
+          Avatar / Fallback headshot
         </h2>
         <p className="text-xs text-slate-400 font-mono">
-          Used as fallback for any photo section if hero or about images are not provided.
+          Used only in avatar slots. It does not replace the Hero image or About image.
         </p>
 
         <ImageUploader
+          key="profile-avatar-uploader"
           value={avatarUrl}
           onImageChange={(url) => setAvatarUrl(url)}
           folder="portfolio/avatars"
-          label="Profile Headshot / Photo"
+          label="Avatar / Fallback headshot"
         />
       </div>
 

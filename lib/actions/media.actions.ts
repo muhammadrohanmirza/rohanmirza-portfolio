@@ -2,6 +2,7 @@
 
 import { assertAdminSession } from "../auth";
 import { deleteCloudinaryAssetByUrl } from "../cloudinary";
+import prisma from "../prisma";
 import fs from "fs/promises";
 import path from "path";
 
@@ -21,8 +22,33 @@ export async function deleteMediaAsset(url: string | null | undefined): Promise<
 
     const trimmedUrl = url.trim();
 
-    // 2. If it's a Cloudinary asset, delete from Cloudinary
+    // 2. If it's a Cloudinary asset, only delete it when it's not still referenced elsewhere.
     if (trimmedUrl.includes("res.cloudinary.com")) {
+      const isStillReferenced = await prisma.profile
+        .findFirst({
+          where: {
+            OR: [
+              { avatarUrl: trimmedUrl },
+              { aboutImageUrl: trimmedUrl },
+            ],
+          },
+          select: { id: true },
+        })
+        .then((profileMatch) => Boolean(profileMatch))
+        .catch(() => false);
+
+      const isHomepageHeroReferenced = await prisma.homepageContent
+        .findFirst({
+          where: { heroImageUrl: trimmedUrl },
+          select: { id: true },
+        })
+        .then((match) => Boolean(match))
+        .catch(() => false);
+
+      if (isStillReferenced || isHomepageHeroReferenced) {
+        return { success: true };
+      }
+
       const result = await deleteCloudinaryAssetByUrl(trimmedUrl);
       if (!result.success) {
         console.error("Cloudinary asset deletion error for URL:", trimmedUrl, result.error);

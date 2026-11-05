@@ -31,10 +31,7 @@ export default async function AdminHomepagePage() {
         </div>
       </div>
 
-      <HomepageForm
-        initialContent={content}
-        initialProfileHeroImage={profile?.heroImageUrl}
-      />
+      <HomepageForm initialContent={content} />
     </div>
   );
 }

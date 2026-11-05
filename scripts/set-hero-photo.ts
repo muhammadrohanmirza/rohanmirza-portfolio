@@ -11,14 +11,7 @@ async function main() {
     console.log('Copied hero image to hero-photo-cutout.png');
   }
 
-  const profile = await prisma.profile.findFirst();
-  if (profile) {
-    await prisma.profile.update({
-      where: { id: profile.id },
-      data: { heroImageUrl: '/uploads/images/hero-photo-cutout.png' }
-    });
-    console.log('Updated profile.heroImageUrl');
-  }
+  console.log('Legacy profile hero image support is disabled; homepage hero image remains the single source.');
 }
 
 main().catch(console.error).finally(() => prisma.$disconnect());

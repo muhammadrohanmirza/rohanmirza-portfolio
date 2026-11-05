@@ -13,7 +13,6 @@ export const ProfileSchema = z.object({
   title: z.string().trim().min(2, "Title is required").max(100),
   bio: z.string().trim().min(10, "Bio must be at least 10 characters"),
   avatarUrl: urlOrPath.optional().nullable().or(z.literal("")),
-  heroImageUrl: urlOrPath.optional().nullable().or(z.literal("")),
   aboutImageUrl: urlOrPath.optional().nullable().or(z.literal("")),
   resumeUrl: urlOrPath.optional().nullable().or(z.literal("")),
   yearsOfExp: z.number().int().min(0).max(50).optional().nullable(),
